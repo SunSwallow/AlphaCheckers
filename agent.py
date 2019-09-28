@@ -39,11 +39,10 @@ class TeamNameMinimaxAgent(Agent):
         self.action = random.choice(legal_actions)
 
         ### START CODE HERE ###
+        board = copy.deepcopy(state[1])
+        _, self.action = self.MiniMax_pruned_version(state=(state[0], board), value_of_last_state=10000, depth=0)
 
-        #_, self.action = self.MiniMax(state=state, depth=0)
-        _, self.action = self.MiniMax_pruned_version(state=state, value_of_last_state=10000, depth=0)
-
-    def MiniMax(self, state, depth, Depth=2):   #MiniMax递归算法
+    def MiniMax(self, state, depth, Depth=2):  # MiniMax递归算法
         if depth != Depth:
             evaluation_value = -10000
             selected_action = None
@@ -53,67 +52,71 @@ class TeamNameMinimaxAgent(Agent):
                 board = copy.deepcopy(state[1])
                 board.board_status[action[0]] = 0
                 board.board_status[action[1]] = player
-                value, next_action = self.MiniMax((3-player, board), depth+1)
-                if value*((-1)**depth) > evaluation_value:  #这里整合了MAX和MIN两种情况：对于MIN，取最小值即是取其相反数的MAX
+                value, next_action = self.MiniMax((3 - player, board), depth + 1)
+                if value * ((-1) ** depth) > evaluation_value:  # 这里整合了MAX和MIN两种情况：对于MIN，取最小值即是取其相反数的MAX
                     evaluation_value = value
                     selected_action = action
             return evaluation_value, selected_action
         else:
-            evaluation_value = self.evaluation(state, p=1, i=5, d=0)    #hahaha
+            evaluation_value = self.evaluation(state, p=1, i=5, d=0)  # hahaha
             return evaluation_value, None
 
     def MiniMax_pruned_version(self, state, value_of_last_state, depth, Depth=2):
         if depth != Depth:
             evaluation_value = -10000
-            value_of_last_state = value_of_last_state   #alpha-beta pruning需要参考前一层的值，因此需添加这个参数
+            value_of_last_state = value_of_last_state  # alpha-beta pruning需要参考前一层的值，因此需添加这个参数
             selected_action = None
             legal_actions = self.game.actions(state)
             player = state[0]
             for action in self.stimulation_max(state, legal_actions):
-                board = copy.deepcopy(state[1])
+                board = state[1]
                 board.board_status[action[0]] = 0
                 board.board_status[action[1]] = player
-                value, next_action = self.MiniMax_pruned_version((3-player, board), evaluation_value, depth+1)
-
-                if value*((-1)**depth) > evaluation_value:
+                value, next_action = self.MiniMax_pruned_version((3 - player, board), evaluation_value, depth + 1)
+                board.board_status[action[0]] = player
+                board.board_status[action[1]] = 0
+                if value * ((-1) ** depth) > evaluation_value:
                     evaluation_value = value
                     selected_action = action
-                if value*((-1)**depth) > value_of_last_state*((-1)**depth): #alpha-beta pruning的判断条件，同样将MAX与MIN整合在了一起
+                if value * ((-1) ** depth) > value_of_last_state * (
+                        (-1) ** depth):  # alpha-beta pruning的判断条件，同样将MAX与MIN整合在了一起
                     return evaluation_value, selected_action
             return evaluation_value, selected_action
         else:
-            evaluation_value = self.evaluation(state, p=1, i=50, d=0)
+            evaluation_value = self.evaluation(state, p=1, i=10, d=2)
             return evaluation_value, None
 
     def stimulation_max(self, state, legal_actions):
         player = state[0]
-        #board = state[1]
+        # board = state[1]
         # 按照纵向最大跳跃距离排序
         max_actions = sorted(legal_actions, key=lambda x: x[0][0] - x[1][0], reverse=True if player == 1 else False)
         return max_actions
 
-    def evaluation(self, state, p, i, d):   #目前判断因子包括垂直距离、水平距离、最后一个棋子的距离
+    def evaluation(self, state, p, i, d):  # 目前判断因子包括垂直距离、水平距离、最后一个棋子的距离
         player = state[0]
         board = state[1]
-        
+
         if player == 1:
             ver_positions = [position[0] for position in board.getPlayerPiecePositions(player)]
-            hor_positions = [abs(position[1]-board.getColNum(position[0])/2+1)/board.getColNum(position[0]) for position in board.getPlayerPiecePositions(player)]
+            hor_positions = [abs(position[1] - board.getColNum(position[0]) / 2 + 1) / board.getColNum(position[0]) for
+                             position in board.getPlayerPiecePositions(player)]
             ver_displacement = sum(ver_positions)
-            lagger = 2*board.size-1 - max(ver_positions)
-            hor_displacement = sum(hor_positions)  
-    
+            print(hor_positions)
+            lagger = 2 * board.size - 1 - max(ver_positions)
+            hor_displacement = sum(hor_positions)
+
         else:
-            ver_positions = [2*board.size-position[0] for position in board.getPlayerPiecePositions(player)]
-            hor_positions = [abs(position[1]-board.getColNum(position[0])/2+1)/board.getColNum(position[0]) for position in board.getPlayerPiecePositions(player)]
+            ver_positions = [2 * board.size - position[0] for position in board.getPlayerPiecePositions(player)]
+            hor_positions = [abs(position[1] - board.getColNum(position[0]) / 2 + 1) / board.getColNum(position[0]) for
+                             position in board.getPlayerPiecePositions(player)]
             ver_displacement = sum(ver_positions)
             lagger = min(ver_positions)
             hor_displacement = sum(hor_positions)
-        return -p*ver_displacement + i*lagger - d*hor_displacement
-    
+        return -p * ver_displacement + i * lagger - d * hor_displacement
 
         ### END CODE HERE ###
-        """
+        '''
         第一版代码
         player = self.game.player(state)
         opponent_player = 3 - player
@@ -143,28 +146,7 @@ class TeamNameMinimaxAgent(Agent):
                 board[action_round2[1]] = 0
             board[action[0]] = player
             board[action[1]] = 0
-        """
-
-    def actions(self, state):
-        action_list = []
-        player = state[0]
-        board = state[1]
-        player_piece_pos_list = board.getPlayerPiecePositions(player)
-        for pos in player_piece_pos_list:
-            for adj_pos in board.adjacentPositions(pos):
-                if board.isEmptyPosition(adj_pos):
-                    action_list.append((pos, adj_pos))
-
-        for pos in player_piece_pos_list:
-            boardCopy = copy.deepcopy(board)
-            boardCopy.board_status[pos] = 0
-            for new_pos in boardCopy.getAllHopPositions(pos):
-                if (
-                        pos, new_pos) not in action_list:
-                    action_list.append((pos, new_pos))
-
-        return action_list
+        '''
 
     def h(self, player, board):
         pass
-
