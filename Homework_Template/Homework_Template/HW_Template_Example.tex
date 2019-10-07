@@ -1,36 +1,4 @@
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% An example of a lab report write-up.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-% This is a combination of several labs that I have done in the past for
-% Computer Engineering, so it is not to be taken literally, but instead used as
-% a great starting template for your own lab write up.  When creating this
-% template, I tried to keep in mind all of the functions and functionality of
-% LaTeX that I spent a lot of time researching and using in my lab reports and
-% include them here so that it is fairly easy for students first learning LaTeX
-% to jump on in and get immediate results.  However, I do assume that the
-% person using this guide has already created at least a "Hello World" PDF
-% document using LaTeX (which means it's installed and ready to go).
-%
-% My preference for developing in LaTeX is to use the LaTeX Plugin for gedit in
-% Linux.  There are others for Mac and Windows as well (particularly MikTeX).
-% Another excellent plugin is the Calc2LaTeX plugin for the OpenOffice suite.
-% It makes it very easy to create a large table very quickly.
-%
-% Professors have different tastes for how they want the lab write-ups done, so
-% check with the section layout for your class and create a template file for
-% each class (my recommendation).
-%
-% Also, there is a list of common commands at the bottom of this document.  Use
-% these as a quick reference.  If you'd like more, you can view the "LaTeX Cheat
-% Sheet.pdf" included with this template material.
-%
-% (c) 2009 Derek R. Hildreth <derek@derekhildreth.com> http://www.derekhildreth.com
-% This work is licensed under the Creative Commons Attribution-NonCommercial-ShareAlike License. To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/1.0/ or send a letter to Creative Commons, 559 Nathan Abbott Way, Stanford, California 94305, USA.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\documentclass[aps,letterpaper,10pt]{revtex4}
-
-\input kvmacros % For Karnaugh Maps (K-Maps)
-
+\documentclass[aps,letterpaper,10pt]{article}
 
 \usepackage{multirow}
 \usepackage{graphicx} % For images
@@ -40,7 +8,7 @@
 \usepackage{amssymb}  % For more math
 \usepackage{fullpage} % Set margins and place page numbers at bottom center
 \usepackage{listings} % For source code
-\usepackage{subfig}   % For subfigures
+\usepackage{subfigure}   % For subfigures
 \usepackage[usenames,dvipsnames]{color} % For colors and names
 \usepackage[pdftex]{hyperref}           % For hyperlinks and indexing the PDF
 \usepackage{xcolor}
@@ -123,8 +91,8 @@ style = lgeneral,
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newcommand{\labno}{05}
 \newcommand{\labtitle}{AU 332 Artificial Intelligence: Principles and Techniques}
-\newcommand{\authorname}{Zhengbao He(517030910157)}
-\newcommand{\hw}{1}
+\newcommand{\authorname}{Zhengbao He(517030910157) \& Jingwei Zhao(5517030910047)}
+\newcommand{\hw}{2}
 % END TITLE PAGE CONTENT %%%%%%%%%%%%%%%%%%%%
 
 
@@ -157,37 +125,31 @@ HW\#: \hw \\ \vspace{10pt}
 %No Text Here
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Purpose}
-\begin{comment}
-This is a lab template which has a ton of different things which are useful in writing lab write-ups in the Computer Eningeering field.
-This is demonstrating the comment block. 
-Don't be overwhelmed, it may seem like a lot to take in at a time, but it's worth spending the time learning it.
-\end{comment}
-In this homework, we are going to apply minimax search with alpha-beta pruning on Chinese Checkers.
-Through this assignment, we will learn how to design and implement a Minimax algorithm 
-and try to optimize it using alpha-beta pruning, a better evaluation function and other methods with limited computing resources.
-Finally, we conducted a simple assessment of this assignment to deepen our understanding of adversarial search.
+In this assignment, we are going to apply minimax search with alpha-beta pruning on Chinese Checkers, in the aim of building an intelligent Chinese Checkers play agent and winning the tournament.
+
+Through this assignment, we will design and implement a Minimax algorithm 
+and try to optimize it using alpha-beta pruning. Besides, we will devise a decent evaluation function as searching heuristics because we can not search the whole adversarial tree with limited computing resources.
+
+Finishing this assignment, we are more conversant with the concept of adversarial search, as well as basic algorithms such as MiniMax and Alpha-Beta Pruning, and how to implement them.
 
 \vspace{3mm} % I use this to seperate the paragraphs a bit.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{Equipment}
-I finished the homework with:
 	\begin{itemize}
 		\item A laptop with Windows 10 or Linux
 		\item Anaconda 3
-		\item VS Code
+		\item VS Code 
 		\item TexLive
 	\end{itemize}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Procedure}
+\begin{enumerate}
+\item Implement Minimax and Alpha-Beta Pruning algorithms in python file {\itshape agent.py}.
+\item Devise an evaluation function, which returns a heristic value indicating which step to take at a cetain searching depth. The evaluation function is necessary because we can not search the whole adversarial tree due to limited computing resources. 
+\item Test the agent, refine the algorithms, and enhance the agent's performance.
+\end{enumerate}
 
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Code and algorithm}
 This section will introduce the code and algorithm we design and some attempts we made(even not effective).
@@ -200,18 +162,23 @@ This section will introduce the code and algorithm we design and some attempts w
 %	do this
 %else
 %	do this
-%\end{lstlisting}
+%\end{lstlisting}#print('\t'*depth + "第{}层节点生成，alpha = {}，beta = {}".format(depth, alpha, beta))
 
 %% THIS IS FROM A DIFFERENT CLASS, BUT DEMONSTRATES MATH MODE WELL
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The basic Minimax algorithm with alpha-beta pruning}
+
+The code below implements a simple MiniMax algorithm with alpha-beta pruning and the default depth is 2, which means that we only consider two movement of our chess.
+This is because when the two pieces are entangled, considering too many moves makes the algorithm very complicated. 
+What we are thinking about is how to reach the end point faster than the enemy, and the enemy is also.
+Because both parties will give priority to their own movements, too deep search will introduce more uncertainty and will consume more resources.
+So when the two players’ pieces are not separated, we just use the MiniMax algorithm whose depth is 2.
 
 \begin{lstlisting}[style = python]
 def MiniMax_pruned_version(self, state, depth, al, be, Depth=2):
 	if depth != Depth:
 		alpha = al
 		beta = be
-		#print('\t'*depth + "第{}层节点生成，alpha = {}，beta = {}".format(depth, alpha, beta))
 		if depth % 2 == 0:  # max layer
 			evaluation = -10000
 		else:
@@ -247,15 +214,15 @@ def MiniMax_pruned_version(self, state, depth, al, be, Depth=2):
 		return evaluation_value, None
 \end{lstlisting}[style = python]
 
-The code above implements a simple MiniMax algorithm with alpha-beta pruning and the default depth is 2,
-which means that we only consider two movement of our chess.
-This is because when the two pieces are entangled, considering too many moves makes the algorithm very complicated. 
-What we are thinking about is how to reach the end point faster than the enemy, and the enemy is also.
-Because both parties will give priority to their own movements, too deep search will introduce more uncertainty and will consume more resources.
-So, when the two players’ pieces are not separated, we just use the MiniMax algorithm whose depth is 2.
+
 
 
 \subsection{SelfMax algorithm}
+When two players’ pieces are separated, we apply another algorithm which we refer to as {\itshape SelfMax} algorithm.
+It just considers the movement of the agent itself, without considering that of the opponent.
+So in this case, since pieces of two players have already been saparated with each side, movement of each side will not affect the other. Thus considering opponent's movement only consume computing resources.
+Bacause we don't need to consider the opponent's movement, the two factors limiting depth in MiniMax above disappear, we can deepen the search depth and get better performence. The detailed codes of {\itshape SelfMax} are listed below.
+
 \begin{lstlisting}[style=python]
 def selfMax(self, state, depth, Depth=2):
 	if depth != Depth:
@@ -286,13 +253,20 @@ def selfMax(self, state, depth, Depth=2):
 		return evaluation, None
 \end{lstlisting}[style=python]
 
-When two players’ pieces are separated, we apply another algorithm which called SelfMax algorithm.
-It just considers the movement of us, without considering that of the opponent, which will not affect our chess pieces.
-So in this case, considering opponent's movement only consume computing resources.
-Bacause we don't need to consider the opponent's movement, the two factors limiting depth in MiniMax above disappear,
-we can deepen the search depth and get better performence.
+
 
 \subsection{Evaluation Function}
+When the search depth is limited because of limited computing resources, it is very important to evaluate the current game when the outcome is not divided.
+In the evaluation function below, we use four factors to evaluate the move decision:
+\begin{itemize}
+\item Total vertical distancement of our pieces
+\item The distance of the piece from the center line of the board
+\item The lagger piece--the piece at the end of the board
+\item Total vertical distancement of opponent's pieces
+\end{itemize}
+
+We use three parameters {\itshape p}, {\itshape i}, and {\itshape d} to weight the four different parts, where the total vertical distancement of our pieces and that of the opponent's pieces share the same parameter ({\itshape p}).
+
 \begin{lstlisting}[style = python]
 def evaluation(self, state, p, i, d):
 	player = state[0]
@@ -319,163 +293,38 @@ def evaluation(self, state, p, i, d):
 	return - p * ver_displacement + i * lagger - d * hor_displacement - p * sum(op_p)
 \end{lstlisting}[style = python]
 
-When the search depth is limited because of limited computing resources, it is very important to evaluate the current game when the outcome is not divided.
-In the evaluation function above, we use four factors to evaluate the move decision:
-\begin{itemize}
-	Total vertical distance of our pieces
-	The distance of the piece from the center line of the board
-	The lagger piece--the piece at the end of the board
-	Total vertical distance of opponent's pieces
-\end{itemize}
-
-It's obvious that we should use the total vertical distance to evaluate the game because the smaller vertical distance means more possible to win.
+It's obvious that we should use the total vertical distance to evaluate the game because a smaller vertical distance means more possiblility to win.
 And it's also better to stay close to the center line of the board. 
 When a piece is on the edge of the board, it has less chances to interact with other pieces,
-which means less possible to make a long hop.
-And we also consider the "lagger" piece. If one piece is left behind by other pieces, it's more likely to move step by step.
+which means less possiblity to make a long hop.
+We also consider the "lagger" piece. If one piece is left behind by other pieces, it's more likely to move step by step.
 The last factor we consider is the total vertical distance of opponent's pieces. 
-The reason is mentioned above: our opponent gives priority to his own movement. 
+The reason is that our opponent gives priority to his own movement. 
 If we don't consider our opponent, the "MIN" in MiniMax is meaningless.
 
+\section{Test and Performance}
+In order to test the validity of our play agent, we make a series of testing games in which our agent competes with a greedy agent. The greedy agent tries to maximize its utility at each move. During the competition, we also modify the parameters of the evaluation funciton so as to let our agent more powerful. We finaly set the parameters {\itshape p}, {\itshape i}, and {\itshape d} to be 2, 10, and 5 respectively before pieces of two players are saparated with each other, and to be 1, 5, 0 after. 
 
+The detailed competing results are show in figure, in which we can see our agent has absolute advantage over the greedy agent, since it wins all of the 100 sequential games which it takes the first step. When our agent takes the second step, it appears to be less advantageous than the previous situation, but it still shows much more superiority to the greedy agent, with 98 wins and 2 ties in a sequence of 100 games.
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\subsection{A* algorithm}
-
-\vspace{3mm}
-
-
-There are two points to note about this specific algorithm used in the solution:
-
-First, because of the existence of the 'wall', the Manhattan distance does not work well as a heuristic function, although it satisfies consistency. 
-In this question, I use another heuristic function, specifically: 
-
-\vspace{1mm}
-\emph{
-when the current node is in the upper part of the graph(its row value is less than or equal to 2), 
-its \emph{h} value is The sum of the Manhattan distances of it to node (0,3) and node (0,3) to the goal node. 
-Correspondingly, when it is in the lower half of the graph, its \emph{h} value is The sum of the Manhattan distances of it to node (4,3) and node (4,3) to the goal node. }
-\vspace{1mm}
-
-It is easy to prove that this heuristic function also satisfies the consistency.
-\vspace{2mm}
-
-Second, when two nodes have the same \emph{g} value(\emph{g = f + h,f} represents the cost of a node),
-it's obvious that you should first expand the node with a larger cost, that is, a node with a smaller \emph{h} value. 
-Because the smaller value of \emph{h}(the larger cost) means this node may be closer to the goal node.
-
-\vspace{3mm}
-Based on the above two points, I solved this problem using the A* algorithm.
-
-\newpage
-\subsection{Programming Assignment}
-
-Please check the code in \emph{BFSvsDFS.py, UniformCostSearch.py \emph{and} AStarSearch.py.}
-
-It is worth noting that in the code editing area of the search algorithm in each file, 
-I have called the function in \emph{E.1} to check if the goal and start state are valid nodes in the graph.
-So the output may be a little different.You can learn more in \emph{E.1}.
-
-\vspace{3mm}
-
-\subsection{Extra credit}
-\noindent
-Question:
-
-For the programming assignment part, extra credits will be given if you completed the following cases.
-
-\qquad 1. Check if the goal and start state are valid nodes in the graph, return error handling message.
-
-\qquad 2. Check whether the graph satisfies the consistency of heuristics.
-\vspace{3mm}
-
-For E.1, the function is below:
-\begin{lstlisting}[style = python]
-def check_valid(graph, start, goal):
-	print('Begin to check the validity of the start node %s and the goal node %s in the graph:' % (start, goal))
-	flag_of_start = False # True means that start is a valid node, while False means not.
-	flag_of_goal = False # True means that goal is a valid node, while False means not.
-	for i in graph.edges.keys():
-		if i==start or start in graph.edges[i]:
-			flag_of_start = True
-		if i==goal or goal in graph.edges[i]:
-			flag_of_goal = True
-		if flag_of_start and flag_of_goal:
-			break
-	print("\tThe start node is%s a valid node." % '' if flag_of_start else ' not')
-	print("\tThe goal node is%s a valid node." % '' if flag_of_goal else ' not')
-	return flag_of_start, flag_of_goal
-\end{lstlisting}
-
-The first return value of the function represents whether the start state is a valid node, 
-and the second return value represents whether the goal state is a valid node.
-
-I also call the function in the code editing area of search algorithms \emph{BFSvsDFS.py, UniformCostSearch.py \emph{and} AStarSearch.py.}\vspace{3mm}
-
-For E.2, I also wrote a function as following:
-\begin{lstlisting}[style = python]
-	def check_graphs_consistency_of_heuristics(graph,goal):
-    	not_satisfied=[]
-    	for i in graph.edges.keys():
-        	for j in graph.edges[i]:
-            	if (heuristic(graph,i,goal)-heuristic(graph,j,goal))>graph.get_cost(i,j):
-                not_satisfied.append((i,j))
-    	if not_satisfied == []:
-        	print('The graph satisfies the consistency of heuristics.')
-        	return True
-    	else:
-        	print('The graph doesn\'t satisfi	y the consistency of heuristics because:')
-        	for i,j in not_satisfied:
-            	print('The h value of %s is %2.4f and the h value of %s is %2.4f but the cost from %s to %s is %d'%
-            	(i,heuristic(graph,i,goal),j,heuristic(graph,j,goal),i,j,graph.get_cost(i,j)) )
-        return False
-\end{lstlisting}
-
-\newpage
-The return value and the printed message both indicate whether the graph satisfies the consistency of heuristics.
-I called this function in \emph{AStarSearch.py}, and the printed message is below:
-\begin{lstlisting}[style = python]
-	'''
-	The small graph doesn't satisfiy the consistency of heuristics because:
-		The h value of B is 7.2111 and the h value of D is 2.8284 but the cost from B to D is 4
-		The h value of C is 8.0000 and the h value of A is 5.6569 but the cost from C to A is 2
-	The large graph doesn't satisfiy the consistency of heuristics because:
-		The h value of S is 10.0000 and the h value of B is 7.8102 but the cost from S to B is 2
-		The h value of B is 7.8102 and the h value of H is 5.0000 but the cost from B to H is 1
-		The h value of C is 8.0000 and the h value of L is 5.0990 but the cost from C to L is 2
-		The h value of G is 3.1623 and the h value of E is 0.0000 but the cost from G to E is 2
-	'''
-\end{lstlisting}
-
-The results show that the heuristic function I designed does not satisfy the consistency in both figures. 
-This is not only related to functions, but also to the nature of the graph. 
-It is possible that the graphs in \emph{AStarSearch.py} are not in the European space, so they do not satisfy the consistency. 
-If we multiply the Euclidean distance in the heuristic function by a sufficiently small constant, we can make these graphs consistent. 
-But when this constant is too small, the heuristic function loses its meaning, and the A* algorithm becomes the UCS algorithm.
-Therefore, it is very important to design different heuristic functions for different graphs.
-
-% AGAIN, ANOTHER EXAMPLE FROM A DIFFERENT CLASS WHICH DEMONSTRasdATES KMAPS AND TABLES NICELY.
-% I added this after viewing the completed pdf and decided to make this cosmetic change
-
-
-% This table was generated using the Calc2LaTeX macro which I mentioned earlier.
-% You'll need OpenOffice installed and you'll have to download the macro online.
-% If you're interested, I have a guide on how to set this up and use it on my
-% blog.  http://www.derekhildreth.com/blog  Search for "LaTeX".  You'll find it.
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{figure}[!h] \centering    
+	\subfigure[Our agent takes the first step] {
+		\label{first}     
+	\includegraphics[width=0.45\columnwidth]{first.jpg}
+	}     
+	\subfigure[Our agent takes the second step] { 
+	\label{second}     
+	\includegraphics[width=0.45\columnwidth]{second.jpg}     
+	}    
+	\caption{ Results of simulation games with a greedy agent }     
+	\label{games}     
+\end{figure} 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \newpage
 \section{Discussion \& Conclusion}
-After studying these search algorithms, it's obvious that the A* algotithm is the most efficient algotithm.
-But when we having no additional information about states beyond that provided in the problem definition, we just can use the uninformed search strategies.
+In this assignment, we implemented an inteligent agent pleyer to play Chinese Checkers. Concretely, we assume both players are intelligent enough, and utilize depth limited MiniMax algorithm to select a next step. In order to enhance time efficiency, we further implemented alpha-beta pruning so that the MiniMax algorithm can go down deeper through the adversarial tree. 
 
-And based on the A* algorithm, we can still make a lot of improvements. 
-In addition to the small trick mentioned in \emph{\RNum{2}.C}, we can use dynamic heuristics, or two-way search, etc.
-I hope that in the future study, I can continue to deepen the study of these algorithms.
-
-
+On innovation of our design is that, we realise that it is not reasonable to continue with MiniMax algorithm after the pieces of both players saparate with each side. At this moment, both sides will no longer interact with each other, thus we do not have to consider the opponent's movement. As a result, our agent only goes down the tree to maxmize its own utility. In practice, our disign effectively booms the performance of our agent.
 \end{document} % DONE WITH DOCUMENT!
 
 
