@@ -40,7 +40,8 @@ class TeamNameMinimaxAgent(Agent):
 
         ### START CODE HERE ###
         board = copy.deepcopy(state[1])
-        if max([position[0] for position in board.getPlayerPiecePositions(1)]) > min([position[0] for position in board.getPlayerPiecePositions(2)]):
+        if max([position[0] for position in board.getPlayerPiecePositions(1)]) > min(
+                [position[0] for position in board.getPlayerPiecePositions(2)]):
             _, self.action = self.MiniMax_pruned_version(state=(state[0], board), al=-10000, be=10000, depth=0)
         else:
             _, self.action = self.selfMax(state=(state[0], board), depth=0)
@@ -49,7 +50,7 @@ class TeamNameMinimaxAgent(Agent):
         if depth != Depth:
             alpha = al
             beta = be
-            #print('\t'*depth + "第{}层节点生成，alpha = {}，beta = {}".format(depth, alpha, beta))
+            # print('\t'*depth + "第{}层节点生成，alpha = {}，beta = {}".format(depth, alpha, beta))
             if depth % 2 == 0:  # max layer
                 evaluation = -10000
             else:
@@ -58,7 +59,7 @@ class TeamNameMinimaxAgent(Agent):
             legal_actions = self.game.actions(state)
             player = state[0]
             for action in self.stimulation_max(state, legal_actions):
-                if action[1][0]*(-1)**player < action[0][0]*(-1)**player:
+                if action[1][0] * (-1) ** player < action[0][0] * (-1) ** player:
                     continue
                 board = state[1]
                 board.board_status[action[0]] = 0
@@ -77,7 +78,7 @@ class TeamNameMinimaxAgent(Agent):
                         selected_action = action
                         beta = value
                 if alpha >= beta:
-                    #print('\t'*depth + "Pruned in layer",depth)
+                    # print('\t'*depth + "Pruned in layer",depth)
                     return evaluation, selected_action
             return evaluation, selected_action
         else:
@@ -91,17 +92,17 @@ class TeamNameMinimaxAgent(Agent):
             legal_actions = self.game.actions(state)
             player = state[0]
             for action in self.stimulation_max(state, legal_actions):
-                if action[1][0]*(-1)**player < action[0][0]*(-1)**player:
+                if action[1][0] * (-1) ** player < action[0][0] * (-1) ** player:
                     continue
                 board = state[1]
                 board.board_status[action[0]] = 0
                 board.board_status[action[1]] = player
                 ver_positions = [position[0] for position in board.getPlayerPiecePositions(player)]
-                if sum(ver_positions) == (2-player)*30 + (player-1)*170:
+                if sum(ver_positions) == (2 - player) * 30 + (player - 1) * 170:
                     board.board_status[action[0]] = player
                     board.board_status[action[1]] = 0
                     return 10000, action
-                value, next_action = self.selfMax((player, board), depth+1)
+                value, next_action = self.selfMax((player, board), depth + 1)
                 board.board_status[action[0]] = player
                 board.board_status[action[1]] = 0
                 if value > evaluation:
@@ -127,7 +128,7 @@ class TeamNameMinimaxAgent(Agent):
             ver_positions = [position[0] for position in board.getPlayerPiecePositions(player)]
             op_p = [position[0] for position in board.getPlayerPiecePositions(3 - player)]
             hor_positions = [abs(position[1] - board.getColNum(position[0]) / 2) / board.getColNum(position[0]) for
-                             position in board.getPlayerPiecePositions(player) if position[0]%2==0]
+                             position in board.getPlayerPiecePositions(player) if position[0] % 2 == 0]
 
             ver_displacement = sum(ver_positions)
             lagger = 2 * board.size - 1 - max(ver_positions)
@@ -136,7 +137,7 @@ class TeamNameMinimaxAgent(Agent):
             ver_positions = [2 * board.size - 1 - position[0] for position in board.getPlayerPiecePositions(player)]
             op_p = [2 * board.size - 1 - position[0] for position in board.getPlayerPiecePositions(3 - player)]
             hor_positions = [abs(position[1] - board.getColNum(position[0]) / 2) / board.getColNum(position[0]) for
-                             position in board.getPlayerPiecePositions(player) if position[0]%2==0]
+                             position in board.getPlayerPiecePositions(player) if position[0] % 2 == 0]
             ver_displacement = sum(ver_positions)
             lagger = 2 * board.size - 1 - max(ver_positions)
             hor_displacement = sum(hor_positions)
