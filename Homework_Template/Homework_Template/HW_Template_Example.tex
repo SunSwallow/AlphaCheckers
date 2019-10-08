@@ -152,7 +152,7 @@ Finishing this assignment, we are more conversant with the concept of adversaria
 
 \newpage
 \section{Code and algorithm}
-This section will introduce the code and algorithm we design and some attempts we made(even not effective).
+This section will introduce the code and algorithm we design and some attempts we made.
 \vspace{3mm}
 
 
@@ -168,11 +168,12 @@ This section will introduce the code and algorithm we design and some attempts w
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsection{The basic Minimax algorithm with alpha-beta pruning}
 
-The code below implements a simple MiniMax algorithm with alpha-beta pruning and the default depth is 2, which means that we only consider two movement of our chess.
-This is because when the two pieces are entangled, considering too many moves makes the algorithm very complicated. 
-What we are thinking about is how to reach the end point faster than the enemy, and the enemy is also.
-Because both parties will give priority to their own movements, too deep search will introduce more uncertainty and will consume more resources.
+The code below implements a simple MiniMax algorithm with alpha-beta pruning and the default depth is 2, which means that we only consider two movement of our pieces.
+This is because when the pieces of both players are entangled, considering too many moves makes the algorithm very complicated. 
+What we are thinking about is how to reach the end point faster than the opponent, and the opponent is also.
+Because both players will give priority to their own movements, too deep search will introduce more uncertainty and consume more computing resources.
 So when the two players’ pieces are not separated, we just use the MiniMax algorithm whose depth is 2.
+
 
 \begin{lstlisting}[style = python]
 def MiniMax_pruned_version(self, state, depth, al, be, Depth=2):
@@ -212,7 +213,7 @@ def MiniMax_pruned_version(self, state, depth, al, be, Depth=2):
 	else:
 		evaluation_value = self.evaluation(state, p=2, i=10, d=5)
 		return evaluation_value, None
-\end{lstlisting}[style = python]
+\end{lstlisting}
 
 
 
@@ -220,8 +221,10 @@ def MiniMax_pruned_version(self, state, depth, al, be, Depth=2):
 \subsection{SelfMax algorithm}
 When two players’ pieces are separated, we apply another algorithm which we refer to as {\itshape SelfMax} algorithm.
 It just considers the movement of the agent itself, without considering that of the opponent.
-So in this case, since pieces of two players have already been saparated with each side, movement of each side will not affect the other. Thus considering opponent's movement only consume computing resources.
-Bacause we don't need to consider the opponent's movement, the two factors limiting depth in MiniMax above disappear, we can deepen the search depth and get better performence. The detailed codes of {\itshape SelfMax} are listed below.
+So in this case, since pieces of two players have already been saparated with each side, movement of each side will not affect the other. 
+Thus considering opponent's movement only consume computing resources.
+Bacause we don't need to consider the opponent's movement, the two factors limiting depth in MiniMax above disappear, we can deepen the search depth and get better performence.
+The detailed codes of {\itshape SelfMax} are listed below(the variable {\itshape Depth} is 2 means that we consider 3 movements of our agent).
 
 \begin{lstlisting}[style=python]
 def selfMax(self, state, depth, Depth=2):
@@ -251,7 +254,7 @@ def selfMax(self, state, depth, Depth=2):
 	else:
 		evaluation = self.evaluation(state, p=1, i=5, d=0)
 		return evaluation, None
-\end{lstlisting}[style=python]
+\end{lstlisting}
 
 
 
@@ -291,7 +294,7 @@ def evaluation(self, state, p, i, d):
 		hor_displacement = sum(hor_positions)
 
 	return - p * ver_displacement + i * lagger - d * hor_displacement - p * sum(op_p)
-\end{lstlisting}[style = python]
+\end{lstlisting}
 
 It's obvious that we should use the total vertical distance to evaluate the game because a smaller vertical distance means more possiblility to win.
 And it's also better to stay close to the center line of the board. 
